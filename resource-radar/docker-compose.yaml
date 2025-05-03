@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  postgres:
+    build:
+      context: .
+      dockerfile: postgres
+    image: "resource-radar-db-image"
+    container_name: ${PG_CONTAINER_NAME}
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGDATA: ${PGDATA}
+    volumes:
+      - resource-radar-db1:/data/postgres_resource-radar
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+    networks:
+      - rr-network
+    restart: unless-stopped
+
+  rr-backend:
+    container_name: rr-backend
+    image: 852268516643.dkr.ecr.ap-south-1.amazonaws.com/resource-radar-backend:latest
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    networks:
+      - rr-network
+    restart: on-failure
+
+  rr-frontend:
+    container_name: rr-frontend
+    image: 852268516643.dkr.ecr.ap-south-1.amazonaws.com/resource-radar-frontend:latest
+    ports:
+      - "80:80"
+      # - "80:80"
+      # - "443:443"
+    # volumes:
+    #   - ./ssl-certs:/etc/ssl
+    
+    depends_on:
+      - rr-backend
+    networks:
+      - rr-network
+    restart: on-failure
+
+networks:
+  rr-network:
+
+volumes:
+  resource-radar-db1:  
+    driver: local

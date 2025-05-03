@@ -1,0 +1,14 @@
+server:
+  port: 8080
+spring:
+  datasource:
+    password: rr-password
+    url: jdbc:postgresql://rr-db-container:5432/resource-radar
+    username: rr-user
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
